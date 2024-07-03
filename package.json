@@ -2,9 +2,9 @@
   "name": "grimoire-backend",
   "version": "1.0.0",
   "description": "this is the bakcen dof the website",
-  "main": "App.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon server.js"
   },
   "author": "tc",
   "license": "ISC",

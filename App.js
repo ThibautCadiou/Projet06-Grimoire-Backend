@@ -1,68 +1,23 @@
-const fs = require('fs');
 const express = require('express');
+
+const bookRouter = require('./routes/bookRoutes');
+// const userRouter = require('./routes/userRoutes');
+
 const app = express();
 
-const books = JSON.parse(fs.readFileSync(`${__dirname}/data/data.json`));
+app.use(express.json());
 
-// Signup
-app.post('/api/auth/signup', (req, res) => {
-  res.status(300).send('This is signup');
+app.use((req, res, next) => {
+  console.log('Hello from the middleware ✌');
+  next();
 });
 
-// Login
-app.post('/api/auth/login', (req, res) => {
-  res.send('This is signup');
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
 });
 
-// Books
-app.get('/api/books', (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    results: books.length,
-    data: {
-      books: books,
-    },
-  });
-});
+app.use('/api/books', bookRouter);
+// app.use('/api/users', userRouter);
 
-// Book
-app.get('/api/books/:id', (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    data: {
-      book: 'This is the book',
-    },
-  });
-});
-
-// Rating
-app.get('/api/books/bestrating', (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    data: {
-      rating: '3/5',
-    },
-  });
-});
-
-// POST book
-app.get('/', (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    results: books.length,
-    data: {
-      books: books,
-    },
-  });
-});
-
-// Put
-
-// Delete
-
-// POST
-
-const port = 4000;
-app.listen(port, () => {
-  console.log(`Running on port : ${port} ...`);
-});
+module.exports = app;
