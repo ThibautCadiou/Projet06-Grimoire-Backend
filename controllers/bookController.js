@@ -14,62 +14,64 @@ exports.getBooks = (req, res) => {
   });
 };
 
-// exports.getTours = (req, res) => {
-//   console.log(req.requestTime);
+exports.getBook = (req, res) => {
+  console.log('Get Da Books !!!');
 
-//   res.status(200).json({
-//     status: 'success',
-//     results: tours.length,
-//     data: {
-//       tours: tours,
-//     },
-//   });
-// };
+  const id = req.params.id;
+  const book = books.find((el) => el.id === id);
 
-// exports.getOneTour = (req, res) => {
-//   console.log(req.params);
-//   const id = req.params.id * 1;
+  res.status(200).json({
+    status: 'success',
+  });
+};
 
-//   if (id > tours.length) {
-//     return res.status(404).json({
-//       status: 'fail',
-//       message: 'Invalid Id',
-//     });
-//   } else {
-//     const tour = tours.find((el) => el.id === id);
+exports.getBestRatings = (req, res) => {
+  console.log('Get 3 best Books !!!');
 
-//     res.status(200).json({
-//       status: 'success',
-//       data: {
-//         tour: tour,
-//       },
-//     });
-//   }
-// };
+  res.status(200).json({
+    status: 'Success',
+    data: {
+      books: '<Updated Tour here ...>',
+    },
+  });
+};
 
-// exports.createTour = (req, res) => {
-//   console.log(req.body);
-//   const newId = tours[tours.length - 1].id + 1;
-//   const newTour = Object.assign({ id: newId }, req.body);
+exports.createBook = (req, res) => {
+  console.log('Add a book');
+  console.log(req.body);
+  const newId = books[books.length - 1].id * 1 + 1;
+  const newBook = Object.assign({ id: newId }, req.body);
+  books.push(newBook);
 
-//   tours.push(newTour);
-//   fs.writeFile(`${__dirname}/dev-data/data/tours.json`, JSON.stringify(tours), (err) => {
-//     res.status(201).json({ status: 'success', data: { tour: newTour } });
-//   });
-// };
+  fs.writeFile(`${__dirname}/data/data.json`, JSON.stringify(books), (err) => {
+    res.status(201).json({ status: 'success', data: { book: newBook } });
+  });
+};
 
-// exports.updateTour = (req, res) => {
-//   res.status(200).json({
-//     status: 'Success',
-//     data: {
-//       tour: '<Updated Tour here ...>',
-//     },
-//   });
-// };
+exports.updateBook = (req, res) => {
+  console.log('Update a book');
+  res.status(200).json({
+    status: 'Success',
+    data: {
+      tour: '<Updated Book here ...>',
+    },
+  });
+};
 
-// exports.deleteTour = (req, res) => {
-//   res.status(204).json({
-//     status: 'success',
-//     data: null,
-//   });
-// };
+exports.deleteBook = (req, res) => {
+  console.log('Delete a book');
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
+};
+
+exports.defineRating = (req, res) => {
+  console.log('Define the rating of a book by a user of a book');
+  res.status(200).json({
+    status: 'Success',
+    data: {
+      tour: '<Updated Rating>',
+    },
+  });
+};

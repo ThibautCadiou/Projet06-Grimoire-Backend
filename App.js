@@ -1,7 +1,7 @@
 const express = require('express');
 
+const authRouter = require('./routes/authRoutes');
 const bookRouter = require('./routes/bookRoutes');
-// const userRouter = require('./routes/userRoutes');
 
 const app = express();
 
@@ -12,12 +12,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
-  req.requestTime = new Date().toISOString();
-  next();
-});
-
+app.use('/api/auth', authRouter);
 app.use('/api/books', bookRouter);
-// app.use('/api/users', userRouter);
 
 module.exports = app;
