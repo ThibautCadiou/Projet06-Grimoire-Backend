@@ -1,3 +1,5 @@
+const Book = require('./../models/userModel');
+
 exports.hachage = (req, res) => {
   console.log('Hachage !!!');
 

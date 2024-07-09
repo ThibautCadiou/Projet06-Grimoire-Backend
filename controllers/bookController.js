@@ -1,28 +1,98 @@
 const fs = require('fs');
+const Book = require('./../models/bookModel');
 
-const books = JSON.parse(fs.readFileSync(`${__dirname}/../data/data.json`));
-
-exports.getBooks = (req, res) => {
-  // console.log('Get Books !!!');
-  // res.status(200).json({
-  //   status: 'success',
-  //   results: books.length,
-  //   data: {
-  //     books: books,
-  //   },
-  // });
-  books.find();
+exports.getBooks = async (req, res) => {
+  console.log('Get Books !!!');
+  try {
+    const books = await Book.find();
+    res.status(200).json({
+      status: 'success',
+      data: {
+        books: books,
+      },
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: 'failed',
+      message: err,
+    });
+  }
 };
 
-exports.getBook = (req, res) => {
-  console.log('Get Da Books !!!');
+exports.getBook = async (req, res) => {
+  console.log('Get Da Book !!!');
 
-  const id = req.params.id;
-  const book = books.find((el) => el.id === id);
+  try {
+    const book = await Book.findById(req.params.id);
+    res.status(200).json({
+      status: 'success',
+      data: {
+        book: book,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'failed',
+      message: err,
+    });
+  }
+};
 
-  res.status(200).json({
-    status: 'success',
-  });
+exports.createBook = async (req, res) => {
+  try {
+    console.log('Add a book');
+    const newBook = await Book.create(req.body);
+
+    res.status(201).json({
+      status: 'success',
+      data: {
+        book: newBook,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'failed',
+      message: err,
+    });
+  }
+};
+
+exports.updateBook = async (req, res) => {
+  try {
+    const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        book,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'failed',
+      message: err,
+    });
+  }
+};
+
+exports.deleteBook = async (req, res) => {
+  try {
+    console.log('Delete a book');
+    await Book.findByIdAndDelete(req.params.id);
+
+    res.status(204).json({
+      status: 'success',
+      data: null,
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'failed',
+      message: err,
+    });
+  }
 };
 
 exports.getBestRatings = (req, res) => {
@@ -33,36 +103,6 @@ exports.getBestRatings = (req, res) => {
     data: {
       books: '<Updated Tour here ...>',
     },
-  });
-};
-
-exports.createBook = (req, res) => {
-  console.log('Add a book');
-  console.log(req.body);
-  const newId = books[books.length - 1].id * 1 + 1;
-  const newBook = Object.assign({ id: newId }, req.body);
-  books.push(newBook);
-
-  fs.writeFile(`${__dirname}/data/data.json`, JSON.stringify(books), (err) => {
-    res.status(201).json({ status: 'success', data: { book: newBook } });
-  });
-};
-
-exports.updateBook = (req, res) => {
-  console.log('Update a book');
-  res.status(200).json({
-    status: 'Success',
-    data: {
-      tour: '<Updated Book here ...>',
-    },
-  });
-};
-
-exports.deleteBook = (req, res) => {
-  console.log('Delete a book');
-  res.status(204).json({
-    status: 'success',
-    data: null,
   });
 };
 
