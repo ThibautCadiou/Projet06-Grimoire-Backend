@@ -3,15 +3,15 @@ const fs = require('fs');
 const books = JSON.parse(fs.readFileSync(`${__dirname}/../data/data.json`));
 
 exports.getBooks = (req, res) => {
-  console.log('Get Books !!!');
-
-  res.status(200).json({
-    status: 'success',
-    results: books.length,
-    data: {
-      books: books,
-    },
-  });
+  // console.log('Get Books !!!');
+  // res.status(200).json({
+  //   status: 'success',
+  //   results: books.length,
+  //   data: {
+  //     books: books,
+  //   },
+  // });
+  books.find();
 };
 
 exports.getBook = (req, res) => {
