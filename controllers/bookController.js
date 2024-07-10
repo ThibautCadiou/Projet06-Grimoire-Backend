@@ -5,13 +5,16 @@ exports.getBooks = async (req, res) => {
   console.log('Get Books !!!');
   try {
     const books = await Book.find();
-    res.status(200).json({
-      status: 'success',
-      data: {
-        books: books,
-      },
-    });
-  } catch (error) {
+    res.status(200).json(
+      books
+      //   {
+      //   status: 'success',
+      //   data: {
+      //     books,
+      //   },
+      // }
+    );
+  } catch (err) {
     res.status(404).json({
       status: 'failed',
       message: err,

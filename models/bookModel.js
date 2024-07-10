@@ -14,11 +14,20 @@ const bookSchema = new mongoose.Schema({
     type: String,
     required: [true, 'A Book must have an author'],
   },
-  imageUrl: String,
-  year: Number,
-  genre: String,
+  imageUrl: {
+    type: String,
+    required: [true, 'A Book must have an image'],
+  },
+  year: {
+    type: Number,
+    required: [true, 'A Book must have a year of publication'],
+  },
+  genre: {
+    type: String,
+    required: [true, 'A Book must have an genre'],
+  },
   ratings: { userId: String, grade: Number },
-  averageRatings: Number,
+  averageRatings: { type: Number, default: 0 },
 });
 
 const Book = mongoose.model('Book', bookSchema);
