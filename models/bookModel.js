@@ -27,7 +27,7 @@ const bookSchema = new mongoose.Schema({
     required: [true, 'A Book must have an genre'],
   },
   ratings: { userId: String, grade: Number },
-  averageRatings: { type: Number, default: 0 },
+  averageRating: { type: Number, default: 0 },
 });
 
 const Book = mongoose.model('Book', bookSchema);

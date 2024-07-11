@@ -1,9 +1,8 @@
-const { updateSearchIndex } = require('../models/bookModel');
 const jwt = require('jsonwebtoken');
 const User = require('./../models/userModel');
 const bcrypt = require('bcrypt');
 
-exports.signup = async (req, res) => {
+exports.signup = async (req, res, next) => {
   try {
     console.log('signup !!!');
     const hach = await bcrypt.hash(req.body.password, 10);
@@ -18,6 +17,7 @@ exports.signup = async (req, res) => {
       res.status(201).json({
         status: 'success',
         message: 'utilisateur crée',
+        token: hach,
       });
     } catch (error) {
       res.status(400).json({
@@ -42,16 +42,22 @@ exports.login = (req, res, next) => {
           .compare(req.body.password, user.password)
           .then((valid) => {
             if (!valid) {
+              console.log('paire identifiant mot de passe incorrect');
               res.status(401).json({ message: 'paire identifiant mot de passe incorrect' });
             } else {
-              res
-                .status(200)
-                .json({
-                  userId: user._id,
-                  token: jwt.sign({ userId: user._id }, 'RANDOM_TOKEN_SECRET', {
-                    expiresIn: '24h',
-                  }),
-                });
+              console.log('utilisateur connecté');
+
+              process.env.USER_ID = user._id;
+              process.env.USER_TOKEN = user.password;
+              console.log('process.env.USER_ID', process.env.USER_ID);
+              console.log('process.env.USER_TOKEN', process.env.USER_TOKEN);
+
+              res.status(200).json({
+                userId: user._id,
+                token: jwt.sign({ userId: user._id }, 'RANDOM_TOKEN_SECRET', {
+                  expiresIn: '24h',
+                }),
+              });
             }
           })
           .catch((err) => {

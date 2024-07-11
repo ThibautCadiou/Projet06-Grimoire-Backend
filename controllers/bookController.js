@@ -1,19 +1,12 @@
 const fs = require('fs');
 const Book = require('./../models/bookModel');
+const { title } = require('process');
 
 exports.getBooks = async (req, res) => {
   console.log('Get Books !!!');
   try {
     const books = await Book.find();
-    res.status(200).json(
-      books
-      //   {
-      //   status: 'success',
-      //   data: {
-      //     books,
-      //   },
-      // }
-    );
+    res.status(200).json(books);
   } catch (err) {
     res.status(404).json({
       status: 'failed',
@@ -41,26 +34,30 @@ exports.getBook = async (req, res) => {
   }
 };
 
-exports.createBook = async (req, res) => {
-  try {
-    console.log('Add a book');
-    const newBook = await Book.create(req.body);
+exports.createBook = async (req, res, next) => {
+  console.log('Add a book');
 
-    res.status(201).json({
-      status: 'success',
-      data: {
-        book: newBook,
-      },
+  try {
+    const newBook = JSON.parse(req.body.book);
+    console.log('book\n\n\n');
+    console.log(newBook);
+    const myBook = new Book({
+      ...newBook,
+      userId: req.auth.userId,
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
     });
-  } catch (err) {
-    res.status(404).json({
-      status: 'failed',
-      message: err,
-    });
+    console.log(myBook);
+
+    myBook.save();
+
+    return res.status(201).json({ status: 'success', data: { myBook } });
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({ error });
   }
 };
 
-exports.updateBook = async (req, res) => {
+exports.updateBook = async (req, res, next) => {
   try {
     const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -81,10 +78,10 @@ exports.updateBook = async (req, res) => {
   }
 };
 
-exports.deleteBook = async (req, res) => {
+exports.deleteBook = async (req, res, next) => {
   try {
     console.log('Delete a book');
-    await Book.findByIdAndDelete(req.params.id);
+    await Book.findByIdAndDelete(req.params._id);
 
     res.status(204).json({
       status: 'success',
