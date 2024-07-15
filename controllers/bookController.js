@@ -17,9 +17,10 @@ exports.getBooks = async (req, res) => {
 
 exports.getBook = async (req, res) => {
   console.log('Get Da Book !!!');
-
+  console.log(req.params.id);
   try {
     const book = await Book.findById(req.params.id);
+    console.log(book);
     res.status(200).json({
       status: 'success',
       data: {
@@ -36,6 +37,8 @@ exports.getBook = async (req, res) => {
 
 exports.createBook = async (req, res, next) => {
   console.log('Add a book');
+  console.log('req');
+  console.log(req);
 
   try {
     const newBook = JSON.parse(req.body.book);
@@ -43,7 +46,8 @@ exports.createBook = async (req, res, next) => {
     console.log(newBook);
     const myBook = new Book({
       ...newBook,
-      userId: req.auth.userId,
+      // userId: req.auth.userId,
+      ratings: [{ userId: req.userId, grade: 2 }],
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
     });
     console.log(myBook);
