@@ -43,13 +43,14 @@ exports.createBook = async (req, res, next) => {
   try {
     const newBook = JSON.parse(req.body.book);
     console.log('book\n\n\n');
-    console.log(newBook);
     const myBook = new Book({
       ...newBook,
-      // userId: req.auth.userId,
-      ratings: [{ userId: req.userId, grade: 2 }],
+      userId: req.auth.userId,
+      // ratings: [{ userId: req.auth.userId, grade: 2 }],
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
     });
+    console.log('req.body.book');
+    console.log(req.body.book);
     console.log(myBook);
 
     myBook.save();

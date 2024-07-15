@@ -8,8 +8,6 @@ module.exports = (req, res, next) => {
     const userId = decodedToken.userId;
     console.log('userId', userId);
 
-    // console.log(req);
-
     req.auth = {
       userId: userId,
     };

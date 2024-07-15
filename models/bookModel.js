@@ -26,7 +26,21 @@ const bookSchema = new mongoose.Schema({
     type: String,
     required: [true, 'A Book must have an genre'],
   },
-  ratings: { userId: String, grade: Number },
+  ratings: {
+    type: [
+      {
+        userId: {
+          type: String,
+          required: [true, 'A rating must have a user ID'],
+        },
+        grade: {
+          type: Number,
+          required: [true, 'A rating must have a grade'],
+        },
+      },
+    ],
+    required: [true, 'A Book must have ratings'],
+  },
   averageRating: { type: Number, default: 0 },
 });
 
