@@ -15,18 +15,15 @@ exports.getBooks = async (req, res) => {
   }
 };
 
-exports.getBook = async (req, res) => {
+exports.getBook = async (req, res, next) => {
   console.log('Get Da Book !!!');
   console.log(req.params.id);
   try {
     const book = await Book.findById(req.params.id);
+    console.log(' Da book :\n');
+
     console.log(book);
-    res.status(200).json({
-      status: 'success',
-      data: {
-        book: book,
-      },
-    });
+    res.status(200).json(book);
   } catch (err) {
     res.status(404).json({
       status: 'failed',
@@ -57,6 +54,25 @@ exports.createBook = async (req, res, next) => {
 };
 
 exports.updateBook = async (req, res, next) => {
+  let updateBook = req.file
+    ? {
+        ...JSON.parse(req.body.book),
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+      }
+    : { ...JSON.parse(req.body.book) };
+
+  try {
+    await Book.findByIdAndUpdate(req.params.id, updateBook, {
+      new: true,
+      runValidators: true,
+    });
+    res.status(200).json(updateBook);
+  } catch (err) {
+    res.status(404).json({
+      status: 'failed',
+      message: err,
+    });
+  }
   // try {
   //   const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
   //     new: true,
@@ -79,11 +95,10 @@ exports.updateBook = async (req, res, next) => {
 exports.deleteBook = async (req, res, next) => {
   try {
     console.log('Delete a book');
-    await Book.findByIdAndDelete(req.params._id);
+    await Book.findByIdAndDelete(req.params.id);
 
     res.status(204).json({
-      status: 'success',
-      data: null,
+      message: 'success',
     });
   } catch (err) {
     res.status(404).json({
@@ -93,15 +108,10 @@ exports.deleteBook = async (req, res, next) => {
   }
 };
 
-exports.getBestRatings = (req, res) => {
+exports.getBestRatings = async (req, res, next) => {
   console.log('Get 3 best Books !!!');
-
-  res.status(200).json({
-    status: 'Success',
-    data: {
-      books: '<Updated Tour here ...>',
-    },
-  });
+  const books = await Book.find();
+  res.status(200).json(books.slice(0, 3));
 };
 
 exports.defineRating = (req, res) => {
