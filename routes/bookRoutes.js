@@ -12,7 +12,7 @@ router.route('/bestrating').get(bookController.getBestRatings);
 router
   .route('/:id')
   .get(bookController.getBook)
-  .put(auth, bookController.updateBook)
+  .put(auth, multer, bookController.updateBook)
   .delete(auth, bookController.deleteBook);
 
 router.route('/:id/rating').post(auth, bookController.defineRating);

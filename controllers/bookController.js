@@ -37,21 +37,15 @@ exports.getBook = async (req, res) => {
 
 exports.createBook = async (req, res, next) => {
   console.log('Add a book');
-  console.log('req');
-  console.log(req);
 
   try {
     const newBook = JSON.parse(req.body.book);
-    console.log('book\n\n\n');
+
     const myBook = new Book({
       ...newBook,
       userId: req.auth.userId,
-      // ratings: [{ userId: req.auth.userId, grade: 2 }],
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
     });
-    console.log('req.body.book');
-    console.log(req.body.book);
-    console.log(myBook);
 
     myBook.save();
 
@@ -63,24 +57,23 @@ exports.createBook = async (req, res, next) => {
 };
 
 exports.updateBook = async (req, res, next) => {
-  try {
-    const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-
-    res.status(200).json({
-      status: 'success',
-      data: {
-        book,
-      },
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'failed',
-      message: err,
-    });
-  }
+  // try {
+  //   const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
+  //     new: true,
+  //     runValidators: true,
+  //   });
+  //   res.status(200).json({
+  //     status: 'success',
+  //     data: {
+  //       book,
+  //     },
+  //   });
+  // } catch (err) {
+  //   res.status(404).json({
+  //     status: 'failed',
+  //     message: err,
+  //   });
+  // }
 };
 
 exports.deleteBook = async (req, res, next) => {
