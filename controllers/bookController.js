@@ -21,9 +21,6 @@ exports.getBook = async (req, res, next) => {
 
   try {
     const book = await Book.findById(req.params.id);
-    console.log(' Da book :\n');
-
-    console.log(book);
     res.status(200).json(book);
   } catch (err) {
     res.status(404).json({
@@ -87,12 +84,38 @@ exports.updateBook = async (req, res, next) => {
 exports.deleteBook = async (req, res, next) => {
   try {
     console.log('Delete a book');
+
+    // 1) trouver le path de l'image
+    const theBook = await Book.findById(req.params.id);
+
+    // Supprimer l'image de la bd
+    // Extraire le chemin relatif de l'image
+    const relativeImagePath = theBook.imageUrl.split('/images/')[1];
+    const imagePath = 'images/' + relativeImagePath;
+    fs.unlink(imagePath, (err) => {
+      if (err) {
+        console.error('Failed to delete image file:', err);
+      } else {
+        console.log('Image file deleted:', imagePath);
+      }
+    });
+
     await Book.findByIdAndDelete(req.params.id);
 
     res.status(204).json({
       message: 'success',
     });
   } catch (err) {
+    res.status(404).json({
+      status: 'failed',
+      message: err,
+    });
+  }
+};
+
+exports.resizeImages = async (req, res, next) => {
+  try {
+  } catch (error) {
     res.status(404).json({
       status: 'failed',
       message: err,
