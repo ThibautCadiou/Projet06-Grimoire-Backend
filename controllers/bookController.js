@@ -17,7 +17,8 @@ exports.getBooks = async (req, res) => {
 
 exports.getBook = async (req, res, next) => {
   console.log('Get Da Book !!!');
-  console.log(req.params.id);
+  process.env.CURRENT_BOOK_ID = req.params.id;
+
   try {
     const book = await Book.findById(req.params.id);
     console.log(' Da book :\n');
@@ -54,42 +55,26 @@ exports.createBook = async (req, res, next) => {
 };
 
 exports.updateBook = async (req, res, next) => {
-  let updateBook = req.file
-    ? {
-        ...JSON.parse(req.body.book),
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
-      }
-    : { ...JSON.parse(req.body.book) };
-
   try {
-    await Book.findByIdAndUpdate(req.params.id, updateBook, {
-      new: true,
-      runValidators: true,
-    });
-    res.status(200).json(updateBook);
-  } catch (err) {
-    res.status(404).json({
-      status: 'failed',
-      message: err,
-    });
+    console.log('req.body._id');
+    console.log(req.body._id);
+    console.log('process.env.CURRENT_BOOK_ID');
+    console.log(process.env.CURRENT_BOOK_ID);
+
+    if (req.file) {
+      console.log('WITH a file');
+    } else {
+      console.log('without a file');
+      const book = await Book.findByIdAndUpdate(process.env.CURRENT_BOOK_ID, req.body, {
+        new: true,
+      });
+    }
+
+    return res.status(204).json({ status: 'book updated' });
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({ error });
   }
-  // try {
-  //   const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
-  //     new: true,
-  //     runValidators: true,
-  //   });
-  //   res.status(200).json({
-  //     status: 'success',
-  //     data: {
-  //       book,
-  //     },
-  //   });
-  // } catch (err) {
-  //   res.status(404).json({
-  //     status: 'failed',
-  //     message: err,
-  //   });
-  // }
 };
 
 exports.deleteBook = async (req, res, next) => {
