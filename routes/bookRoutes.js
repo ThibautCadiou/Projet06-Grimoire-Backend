@@ -2,10 +2,12 @@ const express = require('express');
 const auth = require('./../middleware/auth');
 const bookController = require('./../controllers/bookController');
 const multer = require('./../middleware/multer-config');
-
 const router = express.Router();
 
-router.route('/').get(bookController.getBooks).post(auth, multer, bookController.createBook);
+router
+  .route('/')
+  .get(bookController.getBooks)
+  .post(auth, multer, bookController.resizeImages, bookController.createBook);
 
 router.route('/bestrating').get(bookController.getBestRatings);
 
