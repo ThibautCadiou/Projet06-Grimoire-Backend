@@ -63,10 +63,17 @@ exports.updateBook = async (req, res, next) => {
 
     if (req.file) {
       console.log('WITH a file');
+      let newBook = req.body;
+      newBook.imageUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+      const book = await Book.findByIdAndUpdate(process.env.CURRENT_BOOK_ID, newBook, {
+        new: true,
+        runValidators: true,
+      });
     } else {
       console.log('without a file');
       const book = await Book.findByIdAndUpdate(process.env.CURRENT_BOOK_ID, req.body, {
         new: true,
+        runValidators: true,
       });
     }
 
