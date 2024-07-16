@@ -1,6 +1,7 @@
 const fs = require('fs');
 const Book = require('./../models/bookModel');
 const { title } = require('process');
+const sharp = require('sharp');
 
 exports.getBooks = async (req, res) => {
   console.log('Get Books !!!');
@@ -39,7 +40,7 @@ exports.createBook = async (req, res, next) => {
     const myBook = new Book({
       ...newBook,
       userId: req.auth.userId,
-      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+      imageUrl: `${req.protocol}://${req.get('host')}/${req.file.filename}`,
     });
 
     myBook.save();
@@ -114,13 +115,22 @@ exports.deleteBook = async (req, res, next) => {
 };
 
 exports.resizeImages = async (req, res, next) => {
-  try {
-  } catch (error) {
-    res.status(404).json({
-      status: 'failed',
-      message: err,
-    });
+  if (!req.file) {
+    return next();
   }
+  const name = req.file.originalname.split(' ').join('_');
+  const newFilename = 'images/' + name + Date.now() + '.jpeg';
+
+  await sharp(req.file.buffer)
+    .resize({ width: 206, height: 260, fit: sharp.fit.inside, withoutEnlargement: true })
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(newFilename);
+
+  req.file.filename = newFilename;
+  console.log('req.file.filename');
+  console.log(req.file.filename);
+  next();
 };
 
 exports.getBestRatings = async (req, res, next) => {
