@@ -54,10 +54,10 @@ exports.createBook = async (req, res, next) => {
 
 exports.updateBook = async (req, res, next) => {
   try {
-    console.log('req.body._id');
-    console.log(req.body._id);
-    console.log('process.env.CURRENT_BOOK_ID');
-    console.log(process.env.CURRENT_BOOK_ID);
+    // console.log('req.body._id');
+    // console.log(req.body._id);
+    // console.log('process.env.CURRENT_BOOK_ID');
+    // console.log(process.env.CURRENT_BOOK_ID);
 
     if (req.file) {
       console.log('WITH a file');
@@ -139,12 +139,57 @@ exports.getBestRatings = async (req, res, next) => {
   res.status(200).json(books.slice(0, 3));
 };
 
-exports.defineRating = (req, res) => {
-  console.log('Define the rating of a book by a user of a book');
-  res.status(200).json({
-    status: 'Success',
-    data: {
-      tour: '<Updated Rating>',
-    },
-  });
+exports.defineRating = async (req, res, next) => {
+  try {
+    console.log('Define the rating of a book by a user of a book');
+
+    // 1) on extrait l'ID
+    const theUrl = req.url.split('/');
+    const theBookId = theUrl[1];
+    const theUserId = req.body.userId;
+
+    // 2) on extrait le livre associé à l'ID
+    const book = await Book.findById(theBookId);
+
+    // 3) on extrait les ratings
+    const ratings = book.ratings;
+
+    // 4) on cherche si l'utisateur a déjà renseigné une note
+    const userIds = ratings.map((rating) => rating.userId);
+    const isUserIdIn = userIds.filter((id) => id === theUserId).length > 0;
+    if (isUserIdIn) {
+      console.log('already in it');
+    } else {
+      console.log('NOT already in it');
+
+      // 5) on ajoute le nouveau rating au ratings
+      const newRating = {
+        userId: theUserId,
+        grade: req.body.rating,
+      };
+      console.log('newRating');
+      console.log(newRating);
+      ratings.push(newRating);
+
+      // Update the book with the new ratings
+      book.ratings = ratings;
+      console.log('book.ratings ');
+      console.log(book.ratings);
+
+      await book.save();
+      // await Book.updateOne(theBookId);
+      // const updatedBook = await Book.updateOne(
+      //   { _id: theBookId },
+      //   { $push: { ratings: newRating } },
+      //   { new: true, runValidators: true }
+      // );
+    }
+
+    res.status(200).json(book);
+  } catch (error) {
+    res.status(400).json({
+      status: 'Failed',
+      message: 'Already rated this book',
+    });
+  }
 };
