@@ -4,7 +4,7 @@ const { title } = require('process');
 const sharp = require('sharp');
 
 exports.getBooks = async (req, res) => {
-  console.log('Get Books !!!');
+  console.log('GET BOOKS\n');
   try {
     const books = await Book.find();
     res.status(200).json(books);
@@ -17,7 +17,7 @@ exports.getBooks = async (req, res) => {
 };
 
 exports.getBook = async (req, res, next) => {
-  console.log('Get Da Book !!!');
+  console.log('GET ONE BOOK \n');
   process.env.CURRENT_BOOK_ID = req.params.id;
 
   try {
@@ -32,15 +32,14 @@ exports.getBook = async (req, res, next) => {
 };
 
 exports.createBook = async (req, res, next) => {
-  console.log('Add a book');
-
+  console.log('ADD A BOOK \n');
   try {
     const newBook = JSON.parse(req.body.book);
 
     const myBook = new Book({
       ...newBook,
       userId: req.auth.userId,
-      imageUrl: `${req.protocol}://${req.get('host')}/${req.file.filename}`,
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
     });
 
     myBook.save();
@@ -53,29 +52,56 @@ exports.createBook = async (req, res, next) => {
 };
 
 exports.updateBook = async (req, res, next) => {
+  console.log('UPDATE \n');
+  console.log('req.file.filename');
+  console.log(req.file.filename);
   try {
-    console.log('req.body._id');
-    console.log(req.body._id);
-    console.log('process.env.CURRENT_BOOK_ID');
-    console.log(process.env.CURRENT_BOOK_ID);
-
     if (req.file) {
-      console.log('WITH a file');
-      let newBook = req.body;
-      newBook.imageUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
-      const book = await Book.findByIdAndUpdate(process.env.CURRENT_BOOK_ID, newBook, {
-        new: true,
-        runValidators: true,
-      });
-    } else {
-      console.log('without a file');
-      const book = await Book.findByIdAndUpdate(process.env.CURRENT_BOOK_ID, req.body, {
-        new: true,
-        runValidators: true,
-      });
-    }
+      console.log('WITH A FILE\n');
 
-    return res.status(204).json({ status: 'book updated' });
+      const newBook = JSON.parse(req.body.book);
+
+      const filenameWithExtension = req.file.originalname.split(' ').join('_');
+      const filenameWithoutExtension = filenameWithExtension.split('.');
+      const a = filenameWithoutExtension[0] + Date.now();
+      const b = `${req.protocol}://${req.get('host')}/${req.file.filename}`;
+
+      console.log('filenameWithoutExtension');
+      console.log(filenameWithoutExtension);
+      console.log('a');
+      console.log(a);
+      console.log('b');
+      console.log(b);
+
+      // const myBook = new Book({
+      //   ...newBook,
+      //   userId: req.auth.userId,
+      //   imageUrl: b,
+      // });
+      // myBook.save();
+
+      const updatedBook = await Book.findByIdAndUpdate(
+        req.params.id,
+        {
+          ...newBook,
+          userId: req.auth.userId,
+          imageUrl: b,
+        },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+
+      return res.status(204).json(updatedBook);
+    } else {
+      console.log('WITHOUT A FILE\n');
+      const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+        runValidators: true,
+      });
+      return res.status(204).json(book);
+    }
   } catch (error) {
     console.error(error);
     return res.status(400).json({ error });
@@ -84,7 +110,7 @@ exports.updateBook = async (req, res, next) => {
 
 exports.deleteBook = async (req, res, next) => {
   try {
-    console.log('Delete a book');
+    console.log('DELETE A BOOK\n');
 
     // 1) trouver le path de l'image
     const theBook = await Book.findById(req.params.id);
@@ -115,17 +141,15 @@ exports.deleteBook = async (req, res, next) => {
 };
 
 exports.resizeImages = async (req, res, next) => {
+  console.log('RESIZE');
+
   if (!req.file) {
     return next();
   }
   const name = req.file.originalname.split(' ').join('_');
-  const newFilename = 'images/' + name + Date.now() + '.jpeg';
+  const newFilename = 'images/' + name + Date.now() + '.webp';
 
-  await sharp(req.file.buffer)
-    .resize({ width: 206, height: 260, fit: sharp.fit.inside, withoutEnlargement: true })
-    .toFormat('jpeg')
-    .jpeg({ quality: 90 })
-    .toFile(newFilename);
+  await sharp(req.file.buffer).toFormat('webp').toFile(newFilename);
 
   req.file.filename = newFilename;
   console.log('req.file.filename');
@@ -134,13 +158,13 @@ exports.resizeImages = async (req, res, next) => {
 };
 
 exports.getBestRatings = async (req, res, next) => {
-  console.log('Get 3 best Books !!!');
+  console.log('GET 3 BEST BOOKS \n');
   const books = await Book.find();
   res.status(200).json(books.slice(0, 3));
 };
 
 exports.defineRating = (req, res) => {
-  console.log('Define the rating of a book by a user of a book');
+  console.log('DEFINE RATING BY USER');
   res.status(200).json({
     status: 'Success',
     data: {
