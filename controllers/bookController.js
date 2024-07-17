@@ -150,7 +150,17 @@ exports.resizeImages = async (req, res, next) => {
   const name = req.file.originalname.split(' ').join('_');
   const newFilename = 'images/' + name + Date.now() + '.webp';
 
-  await sharp(req.file.buffer).toFormat('webp').toFile(newFilename);
+  // sharp.cache(false);
+  await sharp(req.file.buffer)
+    .resize({
+      width: 800,
+      height: 600,
+      fit: 'inside', // Assure que l'image n'est pas recadrée, elle peut être plus petite que les dimensions spécifiées
+      withoutEnlargement: true, // Empêche l'agrandissement de l'image si elle est plus petite que les dimensions spécifiées
+      withoutReduction: false, // Pas de probleme enfaite, to le resize peut dégager
+    })
+    .toFormat('webp')
+    .toFile(newFilename);
 
   req.file.filename = newFilename;
   console.log('req.file.filename');
