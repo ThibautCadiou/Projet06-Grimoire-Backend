@@ -53,10 +53,10 @@ exports.createBook = async (req, res, next) => {
 
 exports.updateBook = async (req, res, next) => {
   console.log('UPDATE \n');
-  console.log('req.file.filename');
-  console.log(req.file.filename);
   try {
     if (req.file) {
+      console.log('req.file.filename');
+      console.log(req.file.filename);
       console.log('WITH A FILE\n');
 
       const newBook = JSON.parse(req.body.book);
