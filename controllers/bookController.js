@@ -165,26 +165,68 @@ exports.getBestRatings = async (req, res, next) => {
 };
 
 exports.defineRating = async (req, res, next) => {
-  console.log('DEFINE RATING BY USER');
-
-  // 1) retrouve le livre qui va bien
-  const myBook = await Book.findById(req.params.id);
-  console.log('\n\nmyBook');
-  console.log(myBook);
-
-  // 2) on extrait les ratings
-  let previousRatings = myBook.ratings;
-  console.log('\n\npreviousRatings');
-  console.log(previousRatings);
-
-  // 3) on extrait les ids:
-  const userIds = previousRatings.map((user) => user.id);
-  console.log('\n\nuserIds');
-  console.log(userIds);
-
   try {
-    res.status(200).json({ message: 'Hey !!!' });
+    console.log('DEFINE RATING BY USER');
+
+    // 1) retrouve le livre qui va bien
+    const myBook = await Book.findById(req.params.id);
+    console.log('\n\nmyBook');
+    console.log(myBook);
+
+    // 2) on extrait les ratings
+    let previousRatings = myBook.ratings;
+    console.log('\n\npreviousRatings');
+    console.log(previousRatings);
+
+    // 3) on extrait les ids:
+    const userIds = previousRatings.map((user) => user.id);
+    console.log('\n\nuserIds');
+    console.log(userIds);
+
+    // 4) on vérifie si notre userId ne fait pas partie de la liste des users
+    const isMyIdInTheList =
+      userIds.filter((user) => user === req.body.userId).length > 0 ? true : false;
+    console.log('\n\nisMyIdInTheList');
+    console.log(isMyIdInTheList);
+
+    if (isMyIdInTheList) {
+      res.status(400).json({ status: 'failed', message: 'the user already noted the book!' });
+    } else {
+      previousRatings.push({ userId: req.body.userId, grade: req.body.rating });
+
+      // 5) on calcule la note moyenne
+      const myNewAverageRating = calculateAverage(previousRatings);
+      console.log('\n\nmyNewAverageRating');
+      console.log(myNewAverageRating);
+
+      console.log('\n\npreviousRatings');
+      console.log(previousRatings);
+
+      let theUpdatedBook = await Book.findByIdAndUpdate(
+        req.params.id,
+        {
+          ratings: previousRatings,
+          averageRating: myNewAverageRating,
+        },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+      console.log('\n\ntheUpdatedBook');
+      console.log(theUpdatedBook);
+      res.status(200).json(theUpdatedBook);
+    }
   } catch (error) {
     res.status(400).json({ status: 'failed', message: error });
   }
+};
+
+const calculateAverage = (ratingsList) => {
+  let sum = 0;
+  for (let i = 0; i < ratingsList.length; i++) {
+    const rating = ratingsList[i];
+    sum += rating.grade;
+  }
+  return parseFloat((sum / ratingsList.length).toFixed(1));
 };
