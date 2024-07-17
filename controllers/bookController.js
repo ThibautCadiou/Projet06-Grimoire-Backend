@@ -2,6 +2,7 @@ const fs = require('fs');
 const Book = require('./../models/bookModel');
 const { title } = require('process');
 const sharp = require('sharp');
+const { map } = require('../App');
 
 exports.getBooks = async (req, res) => {
   console.log('GET BOOKS\n');
@@ -163,12 +164,27 @@ exports.getBestRatings = async (req, res, next) => {
   res.status(200).json(books.slice(0, 3));
 };
 
-exports.defineRating = (req, res) => {
+exports.defineRating = async (req, res, next) => {
   console.log('DEFINE RATING BY USER');
-  res.status(200).json({
-    status: 'Success',
-    data: {
-      tour: '<Updated Rating>',
-    },
-  });
+
+  // 1) retrouve le livre qui va bien
+  const myBook = await Book.findById(req.params.id);
+  console.log('\n\nmyBook');
+  console.log(myBook);
+
+  // 2) on extrait les ratings
+  let previousRatings = myBook.ratings;
+  console.log('\n\npreviousRatings');
+  console.log(previousRatings);
+
+  // 3) on extrait les ids:
+  const userIds = previousRatings.map((user) => user.id);
+  console.log('\n\nuserIds');
+  console.log(userIds);
+
+  try {
+    res.status(200).json({ message: 'Hey !!!' });
+  } catch (error) {
+    res.status(400).json({ status: 'failed', message: error });
+  }
 };
