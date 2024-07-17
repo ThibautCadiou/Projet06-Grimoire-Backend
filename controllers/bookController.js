@@ -39,7 +39,7 @@ exports.createBook = async (req, res, next) => {
     const myBook = new Book({
       ...newBook,
       userId: req.auth.userId,
-      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+      imageUrl: `${req.protocol}://${req.get('host')}/${req.file.filename}`,
     });
 
     myBook.save();
