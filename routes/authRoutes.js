@@ -5,7 +5,7 @@ const User = require('../models/userModel');
 
 const router = express.Router();
 
-// Middleware pour gérer les erreurs de validation
+// // Middleware pour gérer les erreurs de validation
 const validate = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
