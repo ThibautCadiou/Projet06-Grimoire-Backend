@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
   console.log('\n\n AUTH');
+
   try {
     const token = req.headers.authorization.split(' ')[1];
     const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
@@ -13,7 +14,6 @@ module.exports = (req, res, next) => {
 
     next();
   } catch (error) {
-    console.log("probleme à l'authentification");
     res.status(403).json({ error });
   }
 };

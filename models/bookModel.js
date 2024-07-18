@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const uniqueValidator = require('mongoose-unique-validator');
 
 const bookSchema = new mongoose.Schema({
   userId: {
@@ -8,7 +9,7 @@ const bookSchema = new mongoose.Schema({
   title: {
     type: String,
     required: [true, 'A Book must have a title'],
-    unique: true,
+    unique: [true, 'fuck'],
   },
   author: {
     type: String,
@@ -36,6 +37,9 @@ const bookSchema = new mongoose.Schema({
         grade: {
           type: Number,
           required: [true, 'A rating must have a grade'],
+          min: [0, 'Ratings must be over or equel to 0'],
+          max: [5, 'Ratings must be under or equel to 5'],
+          default: 0,
         },
       },
     ],
@@ -43,6 +47,8 @@ const bookSchema = new mongoose.Schema({
   },
   averageRating: { type: Number, default: 0 },
 });
+
+bookSchema.plugin(uniqueValidator);
 
 const Book = mongoose.model('Book', bookSchema);
 

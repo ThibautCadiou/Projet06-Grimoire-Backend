@@ -42,13 +42,19 @@ exports.createBook = async (req, res, next) => {
       userId: req.auth.userId,
       imageUrl: `${req.protocol}://${req.get('host')}/${req.file.filename}`,
     });
+    console.log('\n\nbefore the save');
+    await myBook.save();
 
-    myBook.save();
+    // const myBook = Book.create({
+    //   ...newBook,
+    //   userId: req.auth.userId,
+    //   imageUrl: `${req.protocol}://${req.get('host')}/${req.file.filename}`,
+    // });
+    console.log('\n\nAfter the save');
 
-    return res.status(201).json({ status: 'success', data: { myBook } });
+    return res.status(201).json({ message: 'success' });
   } catch (error) {
-    console.error(error);
-    return res.status(400).json({ error });
+    return res.status(400).json(error);
   }
 };
 
@@ -73,13 +79,6 @@ exports.updateBook = async (req, res, next) => {
       console.log(a);
       console.log('b');
       console.log(b);
-
-      // const myBook = new Book({
-      //   ...newBook,
-      //   userId: req.auth.userId,
-      //   imageUrl: b,
-      // });
-      // myBook.save();
 
       const updatedBook = await Book.findByIdAndUpdate(
         req.params.id,
