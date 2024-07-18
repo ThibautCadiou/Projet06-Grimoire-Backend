@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 
 exports.signup = async (req, res, next) => {
   try {
-    console.log('signup !!!');
+    console.log('\n\n SIGNUP');
     const hach = await bcrypt.hash(req.body.password, 10);
 
     const user = new User({

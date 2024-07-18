@@ -14,6 +14,6 @@ module.exports = (req, res, next) => {
     next();
   } catch (error) {
     console.log("probleme à l'authentification");
-    res.status(401).json({ error });
+    res.status(403).json({ error });
   }
 };
