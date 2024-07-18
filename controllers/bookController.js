@@ -171,7 +171,16 @@ exports.resizeImages = async (req, res, next) => {
 exports.getBestRatings = async (req, res, next) => {
   console.log('GET 3 BEST BOOKS \n');
   const books = await Book.find();
-  res.status(200).json(books.slice(0, 3));
+
+  console.log('\n\nbooks Avant');
+  console.log(books);
+
+  const booksSorted = books.sort((a, b) => b.averageRating - a.averageRating);
+
+  console.log('\n\nbooks Après');
+  console.log(booksSorted);
+
+  res.status(200).json(booksSorted.slice(0, 3));
 };
 
 exports.defineRating = async (req, res, next) => {
