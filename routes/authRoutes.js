@@ -17,8 +17,6 @@ const validate = (req, res, next) => {
 //Midlleware pour vérifier l'unicité de la présence dans la BDD de de l'adresse mail
 const checkDuplicateEmail = async (req, res, next) => {
   console.log('CHECK DUPLICATE EMAIL');
-  console.log('req.body');
-  console.log(req.body);
 
   // On récupère les email de la bd
   const mailTocheck = req.body.email;
@@ -26,15 +24,10 @@ const checkDuplicateEmail = async (req, res, next) => {
 
   // On regarde si celle proposé fait parti de la BD
   const emailList = dbEmails.map((obj) => obj.email);
-  console.log('\n \n emailList');
-  console.log(emailList);
   const isInDB = emailList.includes(mailTocheck);
-  console.log('\n\n isInDB');
-  console.log(isInDB);
 
   if (isInDB) {
-    console.log('the email is already in the Database');
-    return res.status(400).json({ message: 'fuck off' });
+    return res.status(400).json({ message: 'the email is already in the Database' });
   } else {
     next();
   }
@@ -49,7 +42,7 @@ router
       body('email').isEmail().withMessage('Veuillez fournir une adresse email valide.'),
       body('password')
         .isLength({ min: 8 })
-        .withMessage('Le mot de passe doit comporter au moins 6 caractères.'),
+        .withMessage('Le mot de passe doit comporter au moins 8 caractères.'),
     ],
     validate,
     authController.signup

@@ -9,7 +9,7 @@ const bookSchema = new mongoose.Schema({
   title: {
     type: String,
     required: [true, 'A Book must have a title'],
-    unique: [true, 'fuck'],
+    unique: true,
   },
   author: {
     type: String,
