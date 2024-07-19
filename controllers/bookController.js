@@ -1,8 +1,6 @@
 const fs = require('fs');
 const Book = require('./../models/bookModel');
-const { title } = require('process');
 const sharp = require('sharp');
-const { map } = require('../App');
 
 exports.getBooks = async (req, res) => {
   console.log('GET BOOKS\n');

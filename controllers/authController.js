@@ -42,15 +42,12 @@ exports.login = (req, res, next) => {
           .compare(req.body.password, user.password)
           .then((valid) => {
             if (!valid) {
-              console.log('paire identifiant mot de passe incorrect');
               res.status(401).json({ message: 'paire identifiant mot de passe incorrect' });
             } else {
-              console.log('utilisateur connecté');
-
               process.env.USER_ID = user._id;
               process.env.USER_TOKEN = user.password;
-              console.log('process.env.USER_ID', process.env.USER_ID);
-              console.log('process.env.USER_TOKEN', process.env.USER_TOKEN);
+              // console.log('process.env.USER_ID', process.env.USER_ID);
+              // console.log('process.env.USER_TOKEN', process.env.USER_TOKEN);
 
               res.status(200).json({
                 userId: user._id,
