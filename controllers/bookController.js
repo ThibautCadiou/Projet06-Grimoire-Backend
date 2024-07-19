@@ -40,15 +40,7 @@ exports.createBook = async (req, res, next) => {
       userId: req.auth.userId,
       imageUrl: `${req.protocol}://${req.get('host')}/${req.file.filename}`,
     });
-    console.log('\n\nbefore the save');
     await myBook.save();
-
-    // const myBook = Book.create({
-    //   ...newBook,
-    //   userId: req.auth.userId,
-    //   imageUrl: `${req.protocol}://${req.get('host')}/${req.file.filename}`,
-    // });
-    console.log('\n\nAfter the save');
 
     return res.status(201).json({ message: 'success' });
   } catch (error) {
@@ -160,8 +152,7 @@ exports.resizeImages = async (req, res, next) => {
     .toFile(newFilename);
 
   req.file.filename = newFilename;
-  console.log('req.file.filename');
-  console.log(req.file.filename);
+
   next();
 };
 
@@ -169,13 +160,7 @@ exports.getBestRatings = async (req, res, next) => {
   console.log('GET 3 BEST BOOKS \n');
   const books = await Book.find();
 
-  console.log('\n\nbooks Avant');
-  console.log(books);
-
   const booksSorted = books.sort((a, b) => b.averageRating - a.averageRating);
-
-  console.log('\n\nbooks Après');
-  console.log(booksSorted);
 
   res.status(200).json(booksSorted.slice(0, 3));
 };
@@ -186,24 +171,16 @@ exports.defineRating = async (req, res, next) => {
 
     // 1) retrouve le livre qui va bien
     const myBook = await Book.findById(req.params.id);
-    console.log('\n\nmyBook');
-    console.log(myBook);
 
     // 2) on extrait les ratings
     let previousRatings = myBook.ratings;
-    console.log('\n\npreviousRatings');
-    console.log(previousRatings);
 
     // 3) on extrait les ids:
     const userIds = previousRatings.map((user) => user.id);
-    console.log('\n\nuserIds');
-    console.log(userIds);
 
     // 4) on vérifie si notre userId ne fait pas partie de la liste des users
     const isMyIdInTheList =
       userIds.filter((user) => user === req.body.userId).length > 0 ? true : false;
-    console.log('\n\nisMyIdInTheList');
-    console.log(isMyIdInTheList);
 
     if (isMyIdInTheList) {
       res.status(400).json({ status: 'failed', message: 'the user already noted the book!' });
@@ -212,11 +189,6 @@ exports.defineRating = async (req, res, next) => {
 
       // 5) on calcule la note moyenne
       const myNewAverageRating = calculateAverage(previousRatings);
-      console.log('\n\nmyNewAverageRating');
-      console.log(myNewAverageRating);
-
-      console.log('\n\npreviousRatings');
-      console.log(previousRatings);
 
       let theUpdatedBook = await Book.findByIdAndUpdate(
         req.params.id,
@@ -229,8 +201,7 @@ exports.defineRating = async (req, res, next) => {
           runValidators: true,
         }
       );
-      console.log('\n\ntheUpdatedBook');
-      console.log(theUpdatedBook);
+
       res.status(200).json(theUpdatedBook);
     }
   } catch (error) {
